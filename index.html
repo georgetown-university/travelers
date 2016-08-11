@@ -11,23 +11,6 @@
   <link rel="stylesheet" href="https://georgetown-university.github.io/whitehaven-media/css/screen.css" />
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
-</head>
-
-<body>
-  <header class="navbar">
-    <div class="container">
-      <div class="navbar-header pull-xs-left">
-        <a href="http://www.georgetown.edu/">
-          <span class="sr-only">Georgetown University</span>
-          <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-2x.png" alt="Georgetown University" class="hidden-sm-down full-logo">
-          <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-abbr-2x.png" width="40" height="28" alt="Georgetown University" class="hidden-md-up pull-md-left pull-sm-left pull-xs-left">
-        </a>
-        <h2 id="site-title"><a class="site-name" href="#">Georgetown Travelers</a></h2>
-      </div>
-      <div class="pull-xs-right hidden-md-up">
-        <a type="button" class="btn btn-primary btn-sm toggle-nav navbar-toggler" data-toggle="offcanvas">&#9776;</a>
-      </div>
-    </div>
     <style type="text/css">
       .leaflet-container{background-color:#c5e8ff;}
       .info {
@@ -62,11 +45,28 @@
         opacity: 0.7;
       }
     </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="container">
+      <div class="navbar-header pull-xs-left">
+        <a href="http://www.georgetown.edu/">
+          <span class="sr-only">Georgetown University</span>
+          <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-2x.png" alt="Georgetown University" class="hidden-sm-down full-logo">
+          <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-abbr-2x.png" width="40" height="28" alt="Georgetown University" class="hidden-md-up pull-md-left pull-sm-left pull-xs-left">
+        </a>
+        <h2 id="site-title"><a class="site-name" href="#">Georgetown Travelers</a></h2>
+      </div>
+      <div class="pull-xs-right hidden-md-up">
+        <a type="button" class="btn btn-primary btn-sm toggle-nav navbar-toggler" data-toggle="offcanvas">&#9776;</a>
+      </div>
+    </div>
   </header>
 
 
 <div class="container-fluid content" style="padding-top: 20px">
-  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shades of each country represent student concentration, while each marker indicates the number of terrorist attacks (click for more details).</p>
+  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shades of each country represent student concentration, while the markers indicate the number of terrorist attacks (click for more details).</p>
   <div id="mapid"></div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -161,6 +161,14 @@
                        '#FFEDA0';
     }
 
+    function getIconColor(d) {
+      return d > 6 ? '#BD0026' :
+             d > 4 ? '#F03B20' :
+             d > 2 ? '#FD8D3C' :
+             d > 0 ? '#FEB24C' :
+                       '#FFEDA0';
+    }
+
     function style(feature) {
 			if(feature.properties.people > 0) {
 			return {
@@ -217,7 +225,7 @@
 
       var coordinate = feature.point;
       if (feature.properties.attacks>0) {
-        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " attack(s)");
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " incident(s) since 2010");
       }
       }
       countries.addTo(map);
@@ -251,6 +259,24 @@
 			return div;
 		};
 		legend.addTo(map);
+
+    var attackLegend = L.control({position: 'bottomright'});
+    attackLegend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend attack'),
+        grades = [0, 2, 4, 6],
+        labels = [],
+        from, to;
+      for (var i = 0; i < grades.length; i++) {
+        from = grades[i];
+        to = grades[i + 1];
+        labels.push(
+          '<i style="background:' + getIconColor(from + 1) + '"></i> ' +
+          from + (to ? '&ndash;' + to : '+'));
+      }
+      div.innerHTML = '<h6 style="margin-bottom:1px"># Incidents</h6>' + labels.join('<br>');
+      return div;
+    };
+    attackLegend.addTo(map);
 
     shapes.addTo(map);
     var baseLayers = {
