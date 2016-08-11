@@ -152,17 +152,17 @@
 		}
 
     function getIcon(d) {
-      return d > 6 ? icon4 :
-             d > 4 ? icon3 :
-             d > 2 ? icon2 :
+      return d > 10 ? icon4 :
+             d > 5 ? icon3 :
+             d > 1 ? icon2 :
              d > 0 ? icon1 :
                        '#FFEDA0';
     }
 
     function getIconColor(d) {
-      return d > 6 ? '#BD0026' :
-             d > 4 ? '#F03B20' :
-             d > 2 ? '#FD8D3C' :
+      return d > 10 ? '#BD0026' :
+             d > 5 ? '#F03B20' :
+             d > 1 ? '#FD8D3C' :
              d > 0 ? '#FEB24C' :
                        '#FFEDA0';
     }
@@ -246,12 +246,8 @@
 				labels = [],
 				from, to;
 			for (var i = 0; i < grades.length; i++) {
-        if (i == 0) {
-          from = grades[i];
-        }
-        else {
-          from = grades[i] + 1;
-        }				to = grades[i + 1];
+        from = grades[i] + 1;
+    		to = grades[i + 1];
 				labels.push(
 					'<i style="background:' + getColor(from + 1) + '"></i> ' +
 					from + (to ? '&ndash;' + to : '+'));
@@ -264,7 +260,7 @@
     var attackLegend = L.control({position: 'bottomright'});
     attackLegend.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'info legend attack'),
-        grades = [0, 2, 4, 6],
+        grades = [0, 1, 5, 10],
         labels = [],
         from, to;
       for (var i = 0; i < grades.length; i++) {
@@ -275,9 +271,16 @@
           from = grades[i] + 1;
         }
         to = grades[i + 1];
-        labels.push(
+        if (i==0) {
+          labels.push(
+          '<i style="background:' + getIconColor(from + 1) + '"></i> ' +
+          (from + 1));
+        }
+        else {
+          labels.push(
           '<i style="background:' + getIconColor(from + 1) + '"></i> ' +
           from + (to ? '&ndash;' + to : '+'));
+        }
       }
       div.innerHTML = '<h6 style="margin-bottom:1px"># Incidents</h6>' + labels.join('<br>');
       return div;
