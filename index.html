@@ -56,7 +56,7 @@
           <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-2x.png" alt="Georgetown University" class="hidden-sm-down full-logo">
           <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-abbr-2x.png" width="40" height="28" alt="Georgetown University" class="hidden-md-up pull-md-left pull-sm-left pull-xs-left">
         </a>
-        <h2 id="site-title"><a class="site-name" href="/">Georgetown Travelers</a></h2>
+        <h2 id="site-title"><a class="site-name" href="/travelers">Georgetown Travelers</a></h2>
       </div>
       <div class="pull-xs-right hidden-md-up">
         <a type="button" class="btn btn-primary btn-sm toggle-nav navbar-toggler" data-toggle="offcanvas">&#9776;</a>
@@ -246,8 +246,12 @@
 				labels = [],
 				from, to;
 			for (var i = 0; i < grades.length; i++) {
-				from = grades[i];
-				to = grades[i + 1];
+        if (i == 0) {
+          from = grades[i];
+        }
+        else {
+          from = grades[i] + 1;
+        }				to = grades[i + 1];
 				labels.push(
 					'<i style="background:' + getColor(from + 1) + '"></i> ' +
 					from + (to ? '&ndash;' + to : '+'));
@@ -264,7 +268,12 @@
         labels = [],
         from, to;
       for (var i = 0; i < grades.length; i++) {
-        from = grades[i];
+        if (i == 0) {
+          from = grades[i];
+        }
+        else {
+          from = grades[i] + 1;
+        }
         to = grades[i + 1];
         labels.push(
           '<i style="background:' + getIconColor(from + 1) + '"></i> ' +
