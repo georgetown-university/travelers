@@ -17,14 +17,14 @@
         padding: 6px 8px;
         font: 14px/16px Arial, Helvetica, sans-serif;
         background: white;
-        background: rgba(255,255,255,0.8);
+        background: rgba(216,216,216,0.8);
         box-shadow: 0 0 15px rgba(0,0,0,0.2);
         border-radius: 5px;
         width: 250px
       }
-      .info h4 {
+      .info h4, h6 {
         margin: 0 0 5px;
-        color: #777;
+        color: #011e41;
       }
       #mapid {
         width: 80%;
@@ -66,7 +66,7 @@
 
 
 <div class="container-fluid content" style="padding-top: 20px">
-  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shades of each country represent student concentration, while the markers indicate the number of terrorist attacks (click for more details).</p>
+  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shades of each country represent community member concentration, while the markers indicate the number of terrorist attacks (click for more details).</p>
   <div id="mapid"></div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -225,7 +225,7 @@
 
       var coordinate = feature.point;
       if (feature.properties.attacks>0) {
-        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " incident(s) since 2010");
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " community member(s)");
       }
       }
       countries.addTo(map);
