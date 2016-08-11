@@ -105,6 +105,43 @@
     };
     info.addTo(map);
 
+    //icons
+    var icon1 = L.icon({
+      iconUrl: 'img/marker-icon-feb24c.png',
+      iconSize: [25, 41],
+      iconAnchor: [12.5, 41],
+      popupAnchor: [0, -35],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var icon2 = L.icon({
+      iconUrl: 'img/marker-icon-fd8d3c.png',
+      iconSize: [25, 41],
+      iconAnchor: [12.5, 41],
+      popupAnchor: [0, -35],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var icon3 = L.icon({
+      iconUrl: 'img/marker-icon-f03b20.png',
+      iconSize: [25, 41],
+      iconAnchor: [12.5, 41],
+      popupAnchor: [0, -35],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var icon4 = L.icon({
+      iconUrl: 'img/marker-icon-bd0026.png',
+      iconSize: [25, 41],
+      iconAnchor: [12.5, 41],
+      popupAnchor: [0, -35],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
     // functions to style each area
     function getColor(d) {
 			return d > 200 ? '#023858' :
@@ -115,6 +152,15 @@
 			       d > 0   ? '#a6bddb' :
 			                 '#FFEDA0';
 		}
+
+    function getIcon(d) {
+      return d > 6 ? icon4 :
+             d > 4 ? icon3 :
+             d > 2 ? icon2 :
+             d > 0 ? icon1 :
+                       '#FFEDA0';
+    }
+
     function style(feature) {
 			if(feature.properties.people > 0) {
 			return {
@@ -172,13 +218,13 @@
       var coordinate = feature.point;
       var countries = new L.LayerGroup();
       if (feature.properties.attacks>0) {
-        var marker = L.marker(coordinate).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " attacks.");
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " attack(s).");
       }
       }
       countries.addTo(map);
 		}
 
-    var shapes = new L.LayerGroup();
+    var shapes = new L.layerGroup();
 
     // call in geoJSON
 		geojson = L.geoJson(countriesData, {
@@ -207,14 +253,11 @@
 		legend.addTo(map);
 
     shapes.addTo(map);
-    shapes.bringToBack();
-    countries.bringToFront();
     var baseLayers = {
       "Light": baseMap,
     };
-
     var overlays = {
-      "Countries": countries
+      "Countries": countries,
     };
 
     L.control.layers(baseLayers, overlays).addTo(map);
