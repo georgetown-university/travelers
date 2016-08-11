@@ -66,7 +66,7 @@
 
 
 <div class="container-fluid content" style="padding-top: 20px">
-  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shades of each country represent community member concentration, while the markers indicate the number of terrorist attacks (click for more details).</p>
+  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shade of each country represents community member concentration, while the markers indicate the number of terrorist attacks (click for more details).</p>
   <div id="mapid"></div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -86,8 +86,6 @@
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="http://mapbox.com">Mapbox</a>',
       id: 'mapbox.light',
-      noWrap: true,
-      zindex: 0
     })
     baseMap.addTo(map);
 
@@ -178,7 +176,6 @@
 				dashArray: '',
 				fillOpacity: 0.7,
 				fillColor: getColor(feature.properties.people),
-        clickable: false
 			}
 			}
 			else {
