@@ -10,7 +10,7 @@
   <link rel="shortcut icon" href="https://georgetown-university.github.io/whitehaven-guide/favicon.ico" />
   <link rel="stylesheet" href="https://georgetown-university.github.io/whitehaven-media/css/screen.css" />
   <link rel="stylesheet" href="css/main.css" />
-  <link rel="stylesheet" href="css/leaflet.css" />
+  <link rel="stylesheet" href="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
 </head>
 
 <body>
@@ -70,49 +70,50 @@
   <div id="mapid"></div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-  <script src="js/leaflet.js"></script>
-  <script type="text/javascript" src="js/world.js"></script>
+  <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+  <script type="text/javascript" src="js/world2.js"></script>
 
   <script type="text/javascript">
     var map = L.map('mapid', {
       scrollWheelZoom: false,
       maxZoom: 18,
-      minZoom: 2
+      minZoom: 2,
     }).setView([0, 0], 2);
 
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWljaGFlbHJlbnppIiwiYSI6ImNpcm52ZWdhYTBhZG90N25renEzZzk0ZncifQ.8qAmgjXGFFrjdiFUYNGz3A', {
+    // add layers
+    var baseMap = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWljaGFlbHJlbnppIiwiYSI6ImNpcm52ZWdhYTBhZG90N25renEzZzk0ZncifQ.8qAmgjXGFFrjdiFUYNGz3A', {
       attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
         '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
         'Imagery © <a href="http://mapbox.com">Mapbox</a>',
       id: 'mapbox.light',
       noWrap: true,
-    }).addTo(map);
+      zindex: 0
+    })
+    baseMap.addTo(map);
 
     // control that shows state info on hover
     var info = L.control();
-
     info.onAdd = function (map) {
       this._div = L.DomUtil.create('div', 'info');
       this.update();
       return this._div;
     };
-
     info.update = function (props) {
       this._div.innerHTML = '<h4>GU Travelers</h4>' +  (props ?
         '<b>' + props.name + '</b><br />' + props.people + ' traveler(s)'
         : 'Hover over a country to see the number of travelers');
     };
-
     info.addTo(map);
 
+    // functions to style each area
     function getColor(d) {
 			return d > 200 ? '#023858' :
-			       d > 150  ? '#045a8d' :
-			       d > 100  ? '#0570b0' :
+			       d > 150 ? '#045a8d' :
+			       d > 100 ? '#0570b0' :
 			       d > 50  ? '#3690c0' :
-			       d > 10   ? '#74a9cf' :
+			       d > 10  ? '#74a9cf' :
 			       d > 0   ? '#a6bddb' :
-			                  '#FFEDA0';
+			                 '#FFEDA0';
 		}
     function style(feature) {
 			if(feature.properties.people > 0) {
@@ -122,7 +123,8 @@
 				color: 'white',
 				dashArray: '',
 				fillOpacity: 0.7,
-				fillColor: getColor(feature.properties.people)
+				fillColor: getColor(feature.properties.people),
+        clickable: false
 			}
 			}
 			else {
@@ -142,13 +144,15 @@
 				weight: 1,
 				color: '#666',
 				dashArray: '',
-				fillOpacity: 0.7
+				fillOpacity: 0.7,
 			});
 			if (!L.Browser.ie && !L.Browser.opera) {
 				layer.bringToFront();
 			}
 			info.update(layer.feature.properties);
 		}
+
+    // functions to run over each geoJSON once it is called
 		var geojson;
 		function resetHighlight(e) {
 			geojson.resetStyle(e.target);
@@ -164,15 +168,27 @@
 				mouseout: resetHighlight,
         click: zoomToFeature
 			});
-			}
+
+      var coordinate = feature.point;
+      var countries = new L.LayerGroup();
+      if (feature.properties.attacks>0) {
+        var marker = L.marker(coordinate).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " attacks.");
+      }
+      }
+      countries.addTo(map);
 		}
 
+    var shapes = new L.LayerGroup();
+
+    // call in geoJSON
 		geojson = L.geoJson(countriesData, {
 			style: style,
-			onEachFeature: onEachFeature
-		}).addTo(map);
+      onEachFeature: onEachFeature
+		}).addTo(shapes);
 		map.attributionControl.addAttribution('DFID IATI data from <a href="http://iatiregistry.org/">IATI Registry</a>');
-		var legend = L.control({position: 'bottomright'});
+
+    // add legend
+    var legend = L.control({position: 'bottomright'});
 		legend.onAdd = function (map) {
 			var div = L.DomUtil.create('div', 'info legend'),
 				grades = [0, 10, 50, 100, 150, 200],
@@ -189,6 +205,19 @@
 			return div;
 		};
 		legend.addTo(map);
+
+    shapes.addTo(map);
+    shapes.bringToBack();
+    countries.bringToFront();
+    var baseLayers = {
+      "Light": baseMap,
+    };
+
+    var overlays = {
+      "Countries": countries
+    };
+
+    L.control.layers(baseLayers, overlays).addTo(map);
 	</script>
 
 </body>
