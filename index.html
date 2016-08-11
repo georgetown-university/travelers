@@ -66,7 +66,7 @@
 
 
 <div class="container-fluid content" style="padding-top: 20px">
-  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16.</p>
+  <p>Map of "Number of Unique International Travelers to Each Country" from 8/8/15-8/8/16 and terrorist attacks since 2010. The shades of each country represent student concentration, while each marker indicates the number of terrorist attacks (click for more details).</p>
   <div id="mapid"></div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -213,27 +213,27 @@
 				mouseover: highlightFeature,
 				mouseout: resetHighlight,
         click: zoomToFeature
-			});
+			}).addTo(shapes);
 
       var coordinate = feature.point;
-      var countries = new L.LayerGroup();
       if (feature.properties.attacks>0) {
-        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " attack(s).");
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup(feature.properties.name + ": " + feature.properties.attacks + " attack(s)");
       }
       }
       countries.addTo(map);
 		}
 
     var shapes = new L.layerGroup();
+    var countries = new L.LayerGroup();
 
     // call in geoJSON
 		geojson = L.geoJson(countriesData, {
 			style: style,
       onEachFeature: onEachFeature
-		}).addTo(shapes);
+		}).addTo(map);
 		map.attributionControl.addAttribution('DFID IATI data from <a href="http://iatiregistry.org/">IATI Registry</a>');
 
-    // add legend
+    // add legends
     var legend = L.control({position: 'bottomright'});
 		legend.onAdd = function (map) {
 			var div = L.DomUtil.create('div', 'info legend'),
@@ -254,13 +254,14 @@
 
     shapes.addTo(map);
     var baseLayers = {
-      "Light": baseMap,
+      "Light": baseMap
     };
     var overlays = {
-      "Countries": countries,
+      "Countries": shapes,
+      "Incidents": countries
     };
 
-    L.control.layers(baseLayers, overlays).addTo(map);
+    layerControl = L.control.layers(null, overlays, {position: 'topleft'}).addTo(map);
 	</script>
 
 </body>
