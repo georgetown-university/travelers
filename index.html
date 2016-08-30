@@ -98,7 +98,7 @@
     };
     info.update = function (props) {
       this._div.innerHTML = '<h4>GU Travelers</h4>' +  (props ?
-        '<b>' + props.name + '</b><br />' + props.people + ' traveler(s)'
+        '<b>' + props.name + '</b><br />' + props.people + ' expected current traveler(s)<br />' + props.peoplePast + ' traveler(s) from 1/2016-8/2016'
         : 'Hover over a country to see the number of travelers');
     };
     info.addTo(map);
@@ -262,6 +262,29 @@
 			}
 			};
 		}
+
+    function stylePast(feature) {
+      if(feature.properties.peoplePast > 0) {
+      return {
+        weight: 1,
+        opacity: 1,
+        color: 'white',
+        dashArray: '',
+        fillOpacity: 0.7,
+        fillColor: getColor(feature.properties.peoplePast),
+      }
+      }
+      else {
+      return {
+        weight: 0,
+        opacity: 0,
+        color: 'red',
+        dashArray: '',
+        fillOpacity: 0.0,
+        fillColor: getColor(feature.properties.peoplePast)
+      }
+      };
+    }
 		function highlightFeature(e) {
 			var layer = e.target;
 			layer.setStyle({
@@ -277,11 +300,15 @@
 		}
 
     // functions to run over each geoJSON once it is called
-		var geojson;
+		var geojson, geojson2;
 		function resetHighlight(e) {
 			geojson.resetStyle(e.target);
 			info.update();
 		}
+    function resetHighlightPast(e) {
+      geojson2.resetStyle(e.target);
+      info.update();
+    }
 		function zoomToFeature(e) {
 			map.fitBounds(e.target.getBounds());
 		}
@@ -295,24 +322,47 @@
 
       var coordinate = feature.point;
       if (feature.properties.attacks>0) {
-        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " community member(s)");
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " expected current community member(s)<br />" + feature.properties.peoplePast + " past community member(s)");
       }
       if (feature.riskIndex>0) {
-        var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " community member(s)");
+        var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
       }
       }
 		}
 
+    function onEachFeaturePast(feature, layer) {
+      if(feature.properties.peoplePast >= 0) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlightPast,
+        click: zoomToFeature
+      }).addTo(past);
+
+      var coordinate = feature.point;
+      if (feature.properties.attacks>0) {
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      if (feature.riskIndex>0) {
+        var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      }
+    }
+
     var shapes = new L.layerGroup();
     var countries = new L.layerGroup();
     var riskLayer = new L.layerGroup();
+    var past = new L.layerGroup();
 
     // call in geoJSON
 		geojson = L.geoJson(countriesData, {
 			style: style,
       onEachFeature: onEachFeature
 		}).addTo(map);
-//    countries.addTo(map);
+
+    geojson2 = L.geoJson(countriesData, {
+      style: stylePast,
+      onEachFeature: onEachFeaturePast
+    }).addTo(past);
 
     map.attributionControl.addAttribution('World Risk Index data from <a target="_blank" href="http://weltrisikobericht.de/english/">World Risk Report</a>');
     // add legends
@@ -384,13 +434,15 @@
 
     shapes.addTo(map);
     var baseLayers = {
+      "Current Travelers": shapes,
+      "Past Travelers": past
     };
     var overlays = {
       "Incidents": countries,
       "World Risk Index": riskLayer
     };
 
-    layerControl = L.control.layers(null, overlays, {position: 'topleft', collapsed: false}).addTo(map);
+    layerControl = L.control.layers(baseLayers, overlays, {position: 'topleft', collapsed: false}).addTo(map);
 	</script>
 <p>&nbsp;</p>
 <hr />
