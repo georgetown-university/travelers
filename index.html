@@ -66,7 +66,7 @@
 
 
 <div class="container-fluid content" style="padding-top: 20px">
-  <p>Map of expected current travelers and past travelers from January 2016 through August 2016 within the GU community (use the radio buttons to switch between these two groups). The shade of each country represents community member concentration, while the series of markers indicate the number of terrorist attacks, World Risk Indices (a comprehensive measure of natural disaster risk by country provided by the <a href="http://weltrisikobericht.de/english/" target="_blank">WorldRiskReport</a>), and the presence of Zika virus. Click the markers for more details.</p>
+  <p>Map of expected current travelers and past travelers from January 2016 through August 2016 within the GU community (use the radio buttons to switch between these two groups). The shade of each country represents community member concentration, while the series of markers indicate the number of terrorist attacks, World Risk Indices (a comprehensive measure of natural disaster risk provided by the <a href="http://weltrisikobericht.de/english/" target="_blank">WorldRiskReport</a>), and the presence of Zika virus (Zika data provided by <a href="http://www.cdc.gov/zika/geo/active-countries.html" target="_blank">CDC</a>). Click the markers for more details.</p>
   <div id="mapid"></div>
 
   <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
@@ -381,6 +381,7 @@
     }).addTo(past);
 
     map.attributionControl.addAttribution('World Risk Index data from <a target="_blank" href="http://weltrisikobericht.de/english/">World Risk Report</a>');
+    map.attributionControl.addAttribution('Zika data from <a target="_blank" href="http://www.cdc.gov/zika/geo/active-countries.html">CDC</a>');
     // add legends
     var legend = L.control({position: 'bottomleft'});
 		legend.onAdd = function (map) {
