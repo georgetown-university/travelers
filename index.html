@@ -333,7 +333,7 @@
       if (feature.properties.attacks>0) {
         var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " expected current community member(s)<br />" + feature.properties.peoplePast + " past community member(s)");
       }
-      if (feature.riskIndex>0) {
+      if (feature.riskIndex>5.46) {
         var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
       }
       if (feature.zika>0) {
@@ -354,7 +354,7 @@
       if (feature.properties.attacks>0) {
         var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
       }
-      if (feature.riskIndex>0) {
+      if (feature.riskIndex>5.46) {
         var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
       }
       if (feature.zika>0) {
@@ -434,7 +434,7 @@
     var riskLegend = L.control({position: 'bottomright'});
     riskLegend.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'info legend'),
-        grades = [.08, 3.47, 5.47, 7.31, 10.4],
+        grades = [5.47, 7.31, 10.4],
         labels = [],
         from, to;
       for (var i = 0; i < grades.length; i++) {
