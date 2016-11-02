@@ -53,8 +53,8 @@
       <div class="navbar-header pull-xs-left">
         <a href="http://www.georgetown.edu/">
           <span class="sr-only">Georgetown University</span>
-          <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-2x.png" alt="Georgetown University" class="hidden-sm-down full-logo">
-          <img src="https://georgetown-university.github.io/whitehaven-media/img/georgetown-abbr-2x.png" width="40" height="28" alt="Georgetown University" class="hidden-md-up pull-md-left pull-sm-left pull-xs-left">
+          <img src="img/georgetown-2x.png" alt="Georgetown University" class="hidden-sm-down full-logo">
+          <img src="img/georgetown-abbr-2x.png" width="40" height="28" alt="Georgetown University" class="hidden-md-up pull-md-left pull-sm-left pull-xs-left">
         </a>
         <h2 id="site-title"><a class="site-name" href="/travelers">Georgetown Travelers</a></h2>
       </div>
@@ -74,6 +74,7 @@
   <script type="text/javascript" src="js/world.js"></script>
 
   <script type="text/javascript">
+    // create map
     var map = L.map('mapid', {
       scrollWheelZoom: false,
       maxZoom: 18,
@@ -202,6 +203,7 @@
       shadowSize: [68, 95],
       shadowAnchor: [22, 94]
      });
+
     // functions to style each area
     function getColor(d) {
 			return d > 200 ? '#023858' :
