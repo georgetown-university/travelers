@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Georgetown Travelers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="//use.typekit.net/akq3qbf.js"></script>
+  <script>try{Typekit.load({ async: true });}catch(e){}</script>
+  <link rel="shortcut icon" href="img/favicon.ico" />
+  <link rel="stylesheet" href="css/screen.css" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/leaflet.css" />
+    <style type="text/css">
+      .leaflet-container{background-color:#c5e8ff;}
+      .info {
+        padding: 6px 8px;
+        font: 14px/16px Arial, Helvetica, sans-serif;
+        background: white;
+        background: rgba(216,216,216,0.8);
+        box-shadow: 0 0 15px rgba(0,0,0,0.2);
+        border-radius: 5px;
+        width: 250px
+      }
+      .info h4, h6 {
+        margin: 0 0 5px;
+        color: #011e41;
+      }
+      #mapid {
+        width: 80%;
+        height: 800px;
+        margin: auto;
+      }
+      .legend {
+        text-align: left;
+        line-height: 18px;
+        color: #555;
+        width: 120px;
+      }
+      .legend i {
+        width: 18px;
+        height: 18px;
+        float: left;
+        margin-right: 8px;
+        opacity: 0.7;
+      }
+    </style>
+</head>
+
+<body>
+  <header class="navbar">
+    <div class="container">
+      <div class="navbar-header pull-xs-left">
+        <a href="http://www.georgetown.edu/">
+          <span class="sr-only">Georgetown University</span>
+          <img src="img/georgetown-2x.png" alt="Georgetown University" class="hidden-sm-down full-logo">
+          <img src="img/georgetown-abbr-2x.png" width="40" height="28" alt="Georgetown University" class="hidden-md-up pull-md-left pull-sm-left pull-xs-left">
+        </a>
+        <h2 id="site-title"><a class="site-name" href="/travelers">Georgetown Travelers</a></h2>
+      </div>
+      <div class="pull-xs-right hidden-md-up">
+        <a type="button" class="btn btn-primary btn-sm toggle-nav navbar-toggler" data-toggle="offcanvas">&#9776;</a>
+      </div>
+    </div>
+  </header>
+
+
+<div class="container-fluid content" style="padding-top: 20px">
+  <p>Map of expected current travelers and past travelers from January 2016 through August 2016 within the GU community (use the radio buttons to switch between these two groups). The shade of each country represents community member concentration, while the series of markers indicate the number of terrorist attacks, World Risk Indices (a comprehensive measure of natural disaster risk provided by the <a href="http://weltrisikobericht.de/english/" target="_blank">WorldRiskReport</a>), and the presence of Zika virus (Zika data provided by <a href="http://www.cdc.gov/zika/geo/active-countries.html" target="_blank">CDC</a>). Click the markers for more details.</p>
+  <div id="mapid"></div>
+
+  <script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="https://npmcdn.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+  <script type="text/javascript" src="js/world.js"></script>
+
+  <script type="text/javascript">
+    // create map
+    var map = L.map('mapid', {
+      scrollWheelZoom: false,
+      maxZoom: 18,
+      minZoom: 2,
+    }).setView([0, 0], 2);
+
+    // add layers
+    var baseMap = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWljaGFlbHJlbnppIiwiYSI6ImNpcm52ZWdhYTBhZG90N25renEzZzk0ZncifQ.8qAmgjXGFFrjdiFUYNGz3A', {
+      attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, ' +
+        '<a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+        'Imagery &copy; <a href="http://mapbox.com">Mapbox</a>',
+      id: 'mapbox.light',
+    })
+    baseMap.addTo(map);
+
+    // control that shows state info on hover
+    var info = L.control();
+    info.onAdd = function (map) {
+      this._div = L.DomUtil.create('div', 'info');
+      this.update();
+      return this._div;
+    };
+    info.update = function (props) {
+      this._div.innerHTML = '<h4>GU Travelers</h4>' +  (props ?
+        '<b>' + props.name + '</b><br />' + props.people + ' expected current traveler(s)<br />' + props.peoplePast + ' traveler(s) from 1/2016-8/2016'
+        : 'Hover over a country to see the number of travelers');
+    };
+    info.addTo(map);
+
+    //icons
+    var icon1 = L.icon({
+      iconUrl: 'img/marker-icon-feb24c.png',
+      iconSize: [16, 26],
+      iconAnchor: [8, 26],
+      popupAnchor: [0, -20],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var icon2 = L.icon({
+      iconUrl: 'img/marker-icon-fd8d3c.png',
+      iconSize: [19, 31],
+      iconAnchor: [9.5, 31],
+      popupAnchor: [0, -25],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var icon3 = L.icon({
+      iconUrl: 'img/marker-icon-f03b20.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var icon4 = L.icon({
+      iconUrl: 'img/marker-icon-bd0026.png',
+      iconSize: [25, 41],
+      iconAnchor: [12.5, 41],
+      popupAnchor: [0, -35],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var riskIcon0 = L.icon({
+      iconUrl: 'img/riskicon0.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var riskIcon1 = L.icon({
+      iconUrl: 'img/riskicon1.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var riskIcon2 = L.icon({
+      iconUrl: 'img/riskicon2.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var riskIcon3 = L.icon({
+      iconUrl: 'img/riskicon3.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var riskIcon4 = L.icon({
+      iconUrl: 'img/riskicon4.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var riskIcon5 = L.icon({
+      iconUrl: 'img/riskicon5.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    var zikaIcon = L.icon({
+      iconUrl: 'img/zikamarker.png',
+      iconSize: [22, 36],
+      iconAnchor: [11, 36],
+      popupAnchor: [0, -30],
+      shadowSize: [68, 95],
+      shadowAnchor: [22, 94]
+     });
+
+    // functions to style each area
+    function getColor(d) {
+			return d > 200 ? '#023858' :
+			       d > 150 ? '#045a8d' :
+			       d > 100 ? '#0570b0' :
+			       d > 50  ? '#3690c0' :
+			       d > 10  ? '#74a9cf' :
+			       d > 0   ? '#a6bddb' :
+			                 '#FFEDA0';
+		}
+
+    function getIcon(d) {
+      return d > 10 ? icon4 :
+             d > 5 ? icon3 :
+             d > 1 ? icon2 :
+             d > 0 ? icon1 :
+                       '#FFEDA0';
+    }
+
+    function getIconColor(d) {
+      return d > 10 ? '#BD0026' :
+             d > 5 ? '#F03B20' :
+             d > 1 ? '#FD8D3C' :
+             d > 0 ? '#FEB24C' :
+                       '#FFEDA0';
+    }
+
+    function getRiskIcon(d) {
+      return d > 10.4 ? riskIcon5 :
+             d > 7.31 ? riskIcon4 :
+             d > 5.47 ? riskIcon3 :
+             d > 3.47 ? riskIcon2 :
+             d > 0.08 ? riskIcon1 :
+             d > 0 ? riskIcon0 :
+                       '#FFFFFF';
+    }
+
+    function getRiskIconColor(d) {
+      return d > 10.4 ? '#d73027' :
+             d > 7.31 ? '#fc8d59' :
+             d > 5.47 ? '#fee08b' :
+             d > 3.47 ? '#d9ef8b' :
+             d > 0.08 ? '#91cf60' :
+             d > 0 ? '#1a9850' :
+                       '#FFFFFF';
+    }
+
+    function style(feature) {
+			if(feature.properties.people > 0) {
+			return {
+				weight: 1,
+				opacity: 1,
+				color: 'white',
+				dashArray: '',
+				fillOpacity: 0.7,
+				fillColor: getColor(feature.properties.people),
+			}
+			}
+			else {
+			return {
+				weight: 0,
+				opacity: 0,
+				color: 'red',
+				dashArray: '',
+				fillOpacity: 0.0,
+				fillColor: getColor(feature.properties.people)
+			}
+			};
+		}
+
+    function stylePast(feature) {
+      if(feature.properties.peoplePast > 0) {
+      return {
+        weight: 1,
+        opacity: 1,
+        color: 'white',
+        dashArray: '',
+        fillOpacity: 0.7,
+        fillColor: getColor(feature.properties.peoplePast),
+      }
+      }
+      else {
+      return {
+        weight: 0,
+        opacity: 0,
+        color: 'red',
+        dashArray: '',
+        fillOpacity: 0.0,
+        fillColor: getColor(feature.properties.peoplePast)
+      }
+      };
+    }
+		function highlightFeature(e) {
+			var layer = e.target;
+			layer.setStyle({
+				weight: 1,
+				color: '#666',
+				dashArray: '',
+				fillOpacity: 0.7,
+			});
+			if (!L.Browser.ie && !L.Browser.opera) {
+				layer.bringToFront();
+			}
+			info.update(layer.feature.properties);
+		}
+
+    // functions to run over each geoJSON once it is called
+		var geojson, geojson2;
+		function resetHighlight(e) {
+			geojson.resetStyle(e.target);
+			info.update();
+		}
+    function resetHighlightPast(e) {
+      geojson2.resetStyle(e.target);
+      info.update();
+    }
+		function zoomToFeature(e) {
+			map.fitBounds(e.target.getBounds());
+		}
+		function onEachFeature(feature, layer) {
+			if(feature.properties.people >= 0) {
+			layer.on({
+				mouseover: highlightFeature,
+				mouseout: resetHighlight,
+        click: zoomToFeature
+			}).addTo(shapes);
+
+      var coordinate = feature.point;
+      if (feature.properties.attacks>0) {
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " expected current community member(s)<br />" + feature.properties.peoplePast + " past community member(s)");
+      }
+      if (feature.riskIndex>5.46) {
+        var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      if (feature.zika>0) {
+        var marker = L.marker(coordinate, {icon: zikaIcon}).addTo(health).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      }
+		}
+
+    function onEachFeaturePast(feature, layer) {
+      if(feature.properties.peoplePast >= 0) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlightPast,
+        click: zoomToFeature
+      }).addTo(past);
+
+      var coordinate = feature.point;
+      if (feature.properties.attacks>0) {
+        var marker = L.marker(coordinate, {icon: getIcon(feature.properties.attacks)}).addTo(countries).bindPopup("<strong>" + feature.properties.name + ":</strong><br />" + feature.properties.attacks + " incident(s) since 2010, <br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      if (feature.riskIndex>5.46) {
+        var marker = L.marker(coordinate, {icon: getRiskIcon(feature.riskIndex)}).addTo(riskLayer).bindPopup("<strong>" + feature.properties.name + ":</strong><br />World Risk Index: " + feature.riskIndex + "%<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      if (feature.zika>0) {
+        var marker = L.marker(coordinate, {icon: zikaIcon}).addTo(health).bindPopup("<strong>" + feature.properties.name + ":</strong><br />Confirmed cases of Zika<br />" + feature.properties.people + " current community member(s)<br />" + feature.properties.peoplePast + " past community members");
+      }
+      }
+    }
+
+    var shapes = new L.layerGroup();
+    var countries = new L.layerGroup();
+    var riskLayer = new L.layerGroup();
+    var past = new L.layerGroup();
+    var health = new L.layerGroup();
+
+    // call in geoJSON
+		geojson = L.geoJson(countriesData, {
+			style: style,
+      onEachFeature: onEachFeature
+		}).addTo(map);
+
+    geojson2 = L.geoJson(countriesData, {
+      style: stylePast,
+      onEachFeature: onEachFeaturePast
+    }).addTo(past);
+
+    map.attributionControl.addAttribution('World Risk Index data from <a target="_blank" href="http://weltrisikobericht.de/english/">World Risk Report</a>');
+    map.attributionControl.addAttribution('Zika data from <a target="_blank" href="http://www.cdc.gov/zika/geo/active-countries.html">CDC</a>');
+    // add legends
+    var legend = L.control({position: 'bottomleft'});
+		legend.onAdd = function (map) {
+			var div = L.DomUtil.create('div', 'info legend'),
+				grades = [0, 10, 50, 100, 150, 200],
+				labels = [],
+				from, to;
+			for (var i = 0; i < grades.length; i++) {
+        from = grades[i] + 1;
+    		to = grades[i + 1];
+				labels.push(
+					'<i style="background:' + getColor(from + 1) + '"></i> ' +
+					from + (to ? '&ndash;' + to : '+'));
+			}
+			div.innerHTML = '<h6 style="margin-bottom:1px"># Travelers</h6>' + labels.join('<br>');
+			return div;
+		};
+		legend.addTo(map);
+
+    var attackLegend = L.control({position: 'bottomright'});
+    attackLegend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend attack'),
+        grades = [0, 1, 5, 10],
+        labels = [],
+        from, to;
+      for (var i = 0; i < grades.length; i++) {
+        if (i == 0) {
+          from = grades[i];
+        }
+        else {
+          from = grades[i] + 1;
+        }
+        to = grades[i + 1];
+        if (i==0) {
+          labels.push(
+          '<i style="background:' + getIconColor(from + 1) + '"></i> ' +
+          (from + 1));
+        }
+        else {
+          labels.push(
+          '<i style="background:' + getIconColor(from + 1) + '"></i> ' +
+          from + (to ? '&ndash;' + to : '+'));
+        }
+      }
+      div.innerHTML = '<h6 style="margin-bottom:1px"># Incidents</h6>' + labels.join('<br>');
+      return div;
+    };
+    attackLegend.addTo(map);
+
+    var riskLegend = L.control({position: 'bottomright'});
+    riskLegend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend'),
+        grades = [5.47, 7.31, 10.4],
+        labels = [],
+        from, to;
+      for (var i = 0; i < grades.length; i++) {
+        from = grades[i];
+        to = grades[i + 1];
+        labels.push(
+          '<i style="background:' + getRiskIconColor(from + 1) + '"></i> ' +
+          from + (to ? '&ndash;' + to : '+'));
+      }
+      div.innerHTML = '<h6 style="margin-bottom:1px">World Risk Index (%)</h6>' + labels.join('<br>');
+      return div;
+    };
+    riskLegend.addTo(map);
+
+    shapes.addTo(map);
+    var baseLayers = {
+      "Expected Travelers": shapes,
+      "Past Travelers": past
+    };
+    var overlays = {
+      "Incidents": countries,
+      "World Risk Index": riskLayer,
+      "Zika": health
+    };
+
+    layerControl = L.control.layers(baseLayers, overlays, {position: 'topleft', collapsed: false}).addTo(map);
+	</script>
+<p>&nbsp;</p>
+<hr />
+<div class="row" style="padding-bottom:1rem;">
+  <div class="col-md-6">
+    <p style="text-align:center"><strong>Expected travelers from 9/1/2016-12/31/2016</strong></p>
+    <img alt="Graph of expected current travelers by Country" src="img/top_future_travelers.png" />
+  </div>
+  <div class="col-md-6">
+    <p style="text-align:center"><strong>Travelers from 1/1/2016-8/31/2016</strong></p>
+    <img alt="Graph of past travelers by Country" src="img/top_past_travelers.png" />
+
+  </div>
+</div>
+
+<div class="row" style="padding-bottom:2rem;">
+  <div class="col-md-6">
+    <p style="text-align:center"><strong>Incidents by Country</strong></p>
+   <img alt="Graph of Incidents by Country" src="img/incidents-by-country.png" style="border:3" />
+
+  </div>
+  <div class="col-md-6">
+    <p style="text-align:center"><strong>Top World Risk Indices</strong></p>
+    <img alt="Graph of World Risk Index by Country" src="img/riskindex-by-country.png" />
+    <p style="text-align:center" class="small">Figures provided by <a target="_blank" href="http://weltrisikobericht.de/english/">World Risk Report</a></p>
+  </div>
+</div>
+
+</body>
+</div>
+
+  <script type="text/javascript" src="js/jquery-2.2.4.min.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="js/scripts.js"></script>
+</body>
+</html>
